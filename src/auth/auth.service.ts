@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
+import { MailService } from 'src/mail/mail.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async register(email: string, password: string, role: Role) {
@@ -31,6 +33,8 @@ export class AuthService {
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     console.log('=== OTP for', email, ':', otp, '===');
+
+    await this.mailService.sendOTPEmail(email, otp);
 
     await this.usersService.create({
       email,
@@ -93,6 +97,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
+      role: user.role,
     };
   }
 }
