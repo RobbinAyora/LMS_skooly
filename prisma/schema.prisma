@@ -21,8 +21,130 @@ model User {
 
   isVerified Boolean  @default(false)
 
-  otp        String?
-  otpExpiry  DateTime?
+  otp            String?
+  otpExpiry      DateTime?
+  resetToken     String?
+  resetTokenExpiry DateTime?
 
-  createdAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  notifications  Notification[]
+  enrollments    Enrollment[]
+  userProgress   UserLessonProgress[]
+}
+
+enum NotificationType {
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  COURSE_CREATED
+  COURSE_UPDATED
+  USER_APPROVED
+  ADMIN_MESSAGE
+  SYSTEM_ALERT
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message  String
+  link      String?
+  metadata Json?
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Course {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  thumbnail    String?
+  price        Float?
+  instructorId String
+  createdAt    DateTime @default(now())
+
+  enrollments  Enrollment[]
+  lessons      Lesson[]
+  assignments  Assignment[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Lesson {
+  id        String   @id @default(uuid())
+  title     String
+  videoUrl  String?
+  content   String?
+  courseId  String
+  order     Int?
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userProgress UserLessonProgress[]
+}
+
+model UserLessonProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  lessonId  String
+  completed Boolean  @default(false)
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Assignment {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+  dueDate   DateTime?
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
+}
+
+model SupportTicket {
+  id        String      @id @default(uuid())
+  userId    String
+  subject  String
+  message   String
+  status   TicketStatus @default(OPEN)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  messages  SupportMessage[]
+}
+
+model SupportMessage {
+  id         String      @id @default(uuid())
+  ticketId   String
+  senderId   String
+  senderRole String
+  message    String
+  createdAt  DateTime    @default(now())
+
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }

@@ -18,13 +18,30 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body() body: { email: string; password: string; role: Role }) {
-    return this.authService.register(body.email, body.password, body.role);
+  register(@Body() body: { email: string; password: string; role: string }) {
+    const roleValue = Role[body.role.toUpperCase()];
+    return this.authService.register(body.email, body.password, roleValue);
   }
 
   @Post('verify-otp')
   verifyOtp(@Body() body: { email: string; otp: string }) {
     return this.authService.verifyOtp(body.email, body.otp);
+  }
+
+  @Post('forgot-password')
+  forgotPassword(@Body() body: { email: string }) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  resetPassword(
+    @Body() body: { email: string; resetToken: string; newPassword: string },
+  ) {
+    return this.authService.resetPassword(
+      body.email,
+      body.resetToken,
+      body.newPassword,
+    );
   }
 
   @Post('login')
@@ -34,11 +51,13 @@ export class AuthController {
   ) {
     const result = await this.authService.login(body.email, body.password);
 
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('Authentication', result.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: 'none', // Always 'none' for cross-origin support
       maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     return {
@@ -49,7 +68,12 @@ export class AuthController {
 
   @Post('logout')
   logout(@Res({ passthrough: true }) res: ResponseType) {
-    res.clearCookie('Authentication');
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('Authentication', {
+      path: '/',
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
     return { message: 'Logged out successfully' };
   }
 
