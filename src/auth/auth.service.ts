@@ -37,7 +37,7 @@ export class AuthService {
 
     console.log('=== OTP for', email, ':', otp, '===');
 
-    // await this.mailService.sendOTPEmail(email, otp); // commented for testing
+    await this.mailService.sendOTPEmail(email, otp);
 
     const createdUser = await this.usersService.create({
       email,
