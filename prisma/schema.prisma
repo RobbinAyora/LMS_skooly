@@ -49,9 +49,9 @@ model Notification {
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
   title     String
-  message  String
+  message   String
   link      String?
-  metadata Json?
+  metadata  Json?
   isRead    Boolean         @default(false)
   createdAt DateTime        @default(now())
   updatedAt DateTime       @updatedAt
@@ -63,6 +63,11 @@ model Course {
   description  String
   thumbnail    String?
   price        Float?
+  category     String?
+  level        String?
+  isPublished  Boolean  @default(false)
+  totalLessons Int      @default(0)
+  duration     String?
   instructorId String
   createdAt    DateTime @default(now())
 
@@ -86,22 +91,26 @@ model Enrollment {
 model Lesson {
   id        String   @id @default(uuid())
   title     String
+  description String
   videoUrl  String?
-  content   String?
+  duration  Int?   // in seconds
   courseId  String
   order     Int?
   createdAt DateTime @default(now())
 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   userProgress UserLessonProgress[]
+
+  @@unique([title, courseId])
 }
 
 model UserLessonProgress {
-  id        String   @id @default(uuid())
-  userId    String
-  lessonId  String
-  completed Boolean  @default(false)
-  completedAt DateTime?
+  id              String   @id @default(uuid())
+  userId          String
+  lessonId        String
+  completed       Boolean  @default(false)
+  lastWatchedSeconds Int?   // in seconds
+  updatedAt       DateTime @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
@@ -129,9 +138,9 @@ enum TicketStatus {
 model SupportTicket {
   id        String      @id @default(uuid())
   userId    String
-  subject  String
+  subject   String
   message   String
-  status   TicketStatus @default(OPEN)
+  status    TicketStatus @default(OPEN)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 

@@ -4,12 +4,14 @@ import {
   ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class EnrollmentService extends PrismaClient {
+export class EnrollmentService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async enrollUser(userId: string, courseId: string) {
-    const course = await this.course.findUnique({
+    const course = await this.prisma.course.findUnique({
       where: { id: courseId },
     });
 
@@ -17,7 +19,7 @@ export class EnrollmentService extends PrismaClient {
       throw new NotFoundException('Course not found');
     }
 
-    const existingEnrollment = await this.enrollment.findUnique({
+    const existingEnrollment = await this.prisma.enrollment.findUnique({
       where: {
         userId_courseId: {
           userId,
@@ -30,7 +32,7 @@ export class EnrollmentService extends PrismaClient {
       throw new ConflictException('Already enrolled in this course');
     }
 
-    return this.enrollment.create({
+    return this.prisma.enrollment.create({
       data: {
         userId,
         courseId,
@@ -39,7 +41,7 @@ export class EnrollmentService extends PrismaClient {
   }
 
   async checkEnrollment(userId: string, courseId: string): Promise<boolean> {
-    const enrollment = await this.enrollment.findUnique({
+    const enrollment = await this.prisma.enrollment.findUnique({
       where: {
         userId_courseId: {
           userId,
@@ -51,7 +53,7 @@ export class EnrollmentService extends PrismaClient {
   }
 
   async getUserEnrollments(userId: string) {
-    const enrollments = await this.enrollment.findMany({
+    const enrollments = await this.prisma.enrollment.findMany({
       where: { userId },
       include: {
         course: true,
@@ -73,7 +75,7 @@ export class EnrollmentService extends PrismaClient {
   }
 
   async verifyEnrollment(userId: string, courseId: string) {
-    const course = await this.course.findUnique({
+    const course = await this.prisma.course.findUnique({
       where: { id: courseId },
     });
 
@@ -81,7 +83,7 @@ export class EnrollmentService extends PrismaClient {
       throw new NotFoundException('Course not found');
     }
 
-    const enrollment = await this.enrollment.findUnique({
+    const enrollment = await this.prisma.enrollment.findUnique({
       where: {
         userId_courseId: {
           userId,

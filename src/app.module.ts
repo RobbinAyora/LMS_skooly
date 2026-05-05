@@ -11,6 +11,10 @@ import { AssignmentsModule } from './assignments/assignments.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { StudentCoursesModule } from './student-courses/student-courses.module';
 import { SupportModule } from './support/support.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { ProgressModule } from './progress/progress.module';
+import { UploadModule } from './upload/upload.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { SupportModule } from './support/support.module';
     EnrollmentModule,
     StudentCoursesModule,
     SupportModule,
+    LessonsModule,
+    ProgressModule,
+    UploadModule,
+    PrismaModule,
   ],
   controllers: [AppController, ProtectedController],
   providers: [AppService],

@@ -1,13 +1,24 @@
-import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Body } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { CreateCourseDto } from './dto/create-course.dto';
 import type { CurrentUserData } from '../auth/current-user.decorator';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
+
+  @Post()
+  async createCourse(
+    @CurrentUser() user: CurrentUserData,
+    @Body() createCourseDto: CreateCourseDto,
+  ) {
+    return this.coursesService.createCourse(createCourseDto, user.userId);
+  }
 
   @Get()
   async findAllCourses(@CurrentUser() user: CurrentUserData) {

@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Role } from '@prisma/client';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 
@@ -16,6 +18,10 @@ describe('AuthService', () => {
   let _usersService: jest.Mocked<UsersService>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let _jwtService: jest.Mocked<JwtService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _mailService: jest.Mocked<MailService>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _notificationsService: jest.Mocked<NotificationsService>;
 
   const mockUsersService = {
     findByEmail: jest.fn(),
@@ -27,18 +33,31 @@ describe('AuthService', () => {
     sign: jest.fn(),
   };
 
+  const mockMailService = {
+    sendOTPEmail: jest.fn(),
+    sendResetPasswordEmail: jest.fn(),
+  };
+
+  const mockNotificationsService = {
+    createNotification: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: MailService, useValue: mockMailService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     _usersService = module.get(UsersService);
     _jwtService = module.get(JwtService);
+    _mailService = module.get(MailService);
+    _notificationsService = module.get(NotificationsService);
 
     jest.clearAllMocks();
   });

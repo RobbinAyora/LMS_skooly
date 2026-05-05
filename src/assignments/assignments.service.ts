@@ -1,14 +1,12 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class AssignmentsService extends PrismaClient {
-  async onModuleInit() {
-    await this.$connect();
-  }
+export class AssignmentsService {
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllForUser(userId: string) {
-    const enrollments = await this.enrollment.findMany({
+    const enrollments = await this.prisma.enrollment.findMany({
       where: { userId },
       include: {
         course: {
@@ -38,7 +36,7 @@ export class AssignmentsService extends PrismaClient {
   }
 
   async getByCourse(courseId: string, userId: string) {
-    const enrollment = await this.enrollment.findUnique({
+    const enrollment = await this.prisma.enrollment.findUnique({
       where: {
         userId_courseId: {
           userId,
@@ -51,7 +49,7 @@ export class AssignmentsService extends PrismaClient {
       throw new ForbiddenException('You are not enrolled in this course');
     }
 
-    const assignments = await this.assignment.findMany({
+    const assignments = await this.prisma.assignment.findMany({
       where: { courseId },
       orderBy: { dueDate: 'asc' },
     });

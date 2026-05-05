@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export type CourseStatus = 'all' | 'in-progress' | 'completed';
 
@@ -12,13 +12,8 @@ export interface StudentCourse {
 }
 
 @Injectable()
-export class StudentCoursesService
-  extends PrismaClient
-  implements OnModuleInit
-{
-  async onModuleInit() {
-    await this.$connect();
-  }
+export class StudentCoursesService {
+  constructor(private readonly prisma: PrismaService) {}
 
   async getStudentCourses(
     userId: string,
@@ -32,7 +27,7 @@ export class StudentCoursesService
         : 'all';
 
     // Get all enrollments for the user with course and lessons
-    const enrollments = await this.enrollment.findMany({
+    const enrollments = await this.prisma.enrollment.findMany({
       where: { userId },
       include: {
         course: {
@@ -57,7 +52,7 @@ export class StudentCoursesService
 
     const userProgressRecords =
       allLessonIds.length > 0
-        ? await this.userLessonProgress.findMany({
+        ? await this.prisma.userLessonProgress.findMany({
             where: {
               userId,
               lessonId: { in: allLessonIds },

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsBoolean, IsInt } from 'class-validator';
 
 export class CreateCourseDto {
   @IsString()
@@ -15,6 +15,23 @@ export class CreateCourseDto {
   @IsNumber()
   price?: number;
 
+  @IsOptional()
   @IsString()
-  instructorId: string;
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  level?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  totalLessons?: number;
+
+  @IsOptional()
+  @IsString()
+  duration?: string;
 }
