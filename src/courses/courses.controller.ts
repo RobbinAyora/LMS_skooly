@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Body, Logger } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -10,6 +10,8 @@ import type { CurrentUserData } from '../auth/current-user.decorator';
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
 export class CoursesController {
+  private readonly logger = new Logger(CoursesController.name);
+
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
@@ -17,6 +19,7 @@ export class CoursesController {
     @CurrentUser() user: CurrentUserData,
     @Body() createCourseDto: CreateCourseDto,
   ) {
+    this.logger.log(`Incoming Course DTO (Controller): ${JSON.stringify(createCourseDto)}`);
     return this.coursesService.createCourse(createCourseDto, user.userId);
   }
 

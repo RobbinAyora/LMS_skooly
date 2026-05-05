@@ -4,21 +4,26 @@ import {
   ConflictException,
   ForbiddenException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 
 @Injectable()
 export class CoursesService {
+  private readonly logger = new Logger(CoursesService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async createCourse(createCourseDto: CreateCourseDto, instructorId: string) {
+    const dbPayload = {
+      ...createCourseDto,
+      instructorId,
+    };
+    this.logger.log(`Final Course DB Payload (Service): ${JSON.stringify(dbPayload)}`);
     try {
       return this.prisma.course.create({
-        data: {
-          ...createCourseDto,
-          instructorId,
-        },
+        data: dbPayload,
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
