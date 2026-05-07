@@ -20,7 +20,9 @@ export class CoursesService {
       ...createCourseDto,
       instructorId,
     };
-    this.logger.log(`Final Course DB Payload (Service): ${JSON.stringify(dbPayload)}`);
+    this.logger.log(
+      `Final Course DB Payload (Service): ${JSON.stringify(dbPayload)}`,
+    );
     try {
       return this.prisma.course.create({
         data: dbPayload,
@@ -120,14 +122,17 @@ export class CoursesService {
         },
       });
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  async findCourseById(userId: string, courseId: string) {
+  async findCourseById(userId: string, courseId: string, userRole: string) {
     try {
       const course = await this.prisma.course.findUnique({
         where: { id: courseId },
@@ -137,13 +142,19 @@ export class CoursesService {
         throw new NotFoundException('Course not found');
       }
 
+      if (userRole === 'ADMIN') {
+        return course;
+      }
+
+      if (userRole === 'INSTRUCTOR') {
+        if (course.instructorId !== userId) {
+          throw new ForbiddenException('You do not own this course');
+        }
+        return course;
+      }
+
       const enrollment = await this.prisma.enrollment.findUnique({
-        where: {
-          userId_courseId: {
-            userId,
-            courseId,
-          },
-        },
+        where: { userId_courseId: { userId, courseId } },
       });
 
       if (!enrollment) {
@@ -152,7 +163,10 @@ export class CoursesService {
 
       return course;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ForbiddenException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);
@@ -176,7 +190,7 @@ export class CoursesService {
     }
   }
 
-  async getLessons(userId: string, courseId: string) {
+  async getLessons(userId: string, courseId: string, userRole: string) {
     try {
       const course = await this.prisma.course.findUnique({
         where: { id: courseId },
@@ -186,35 +200,38 @@ export class CoursesService {
         throw new NotFoundException('Course not found');
       }
 
-      const enrollment = await this.prisma.enrollment.findUnique({
-        where: {
-          userId_courseId: {
-            userId,
-            courseId,
-          },
-        },
-      });
-
-      if (!enrollment) {
-        throw new ForbiddenException('You are not enrolled in this course');
+      if (userRole === 'INSTRUCTOR') {
+        if (course.instructorId !== userId) {
+          throw new ForbiddenException('You do not own this course');
+        }
+      } else if (userRole !== 'ADMIN') {
+        const enrollment = await this.prisma.enrollment.findUnique({
+          where: { userId_courseId: { userId, courseId } },
+        });
+        if (!enrollment) {
+          throw new ForbiddenException('You are not enrolled in this course');
+        }
       }
 
       const lessons = await this.prisma.lesson.findMany({
         where: { courseId },
-        orderBy: { order: 'asc' },
+        orderBy: { createdAt: 'asc' },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          videoUrl: true,
+          duration: true,
+          createdAt: true,
+        },
       });
 
-      return {
-        courseId,
-        lessons: lessons.map((lesson) => ({
-          id: lesson.id,
-          title: lesson.title,
-          videoUrl: lesson.videoUrl,
-          content: lesson.description,
-        })),
-      };
+      return { courseId, lessons };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ForbiddenException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(error.message);

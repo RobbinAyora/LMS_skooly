@@ -3,9 +3,9 @@ import { ProgressService } from './progress.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
- describe('ProgressService', () => {
-   let service: ProgressService;
-   let mockPrismaService: any;
+describe('ProgressService', () => {
+  let service: ProgressService;
+  let mockPrismaService: any;
 
   const mockLesson = {
     id: 'lesson-1',

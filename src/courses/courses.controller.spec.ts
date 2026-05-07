@@ -128,38 +128,38 @@ describe('CoursesController', () => {
     });
   });
 
-   describe('GET /courses (List All Courses)', () => {
-     it('should return all courses with enrollment status', async () => {
-       const courses = [
-         {
-           id: 'course-1',
-           title: 'Course 1',
-           description: 'Description',
-           thumbnail: null,
-           price: null,
-           category: null,
-           level: null,
-           isPublished: false,
-           totalLessons: 0,
-           duration: null,
-           instructorId: 'instructor-1',
-           isEnrolled: true,
-         },
-         {
-           id: 'course-2',
-           title: 'Course 2',
-           description: 'Description',
-           thumbnail: 'https://example.com/thumb.jpg',
-           price: 99.99,
-           category: null,
-           level: null,
-           isPublished: false,
-           totalLessons: 0,
-           duration: null,
-           instructorId: 'instructor-2',
-           isEnrolled: false,
-         },
-       ];
+  describe('GET /courses (List All Courses)', () => {
+    it('should return all courses with enrollment status', async () => {
+      const courses = [
+        {
+          id: 'course-1',
+          title: 'Course 1',
+          description: 'Description',
+          thumbnail: null,
+          price: null,
+          category: null,
+          level: null,
+          isPublished: false,
+          totalLessons: 0,
+          duration: null,
+          instructorId: 'instructor-1',
+          isEnrolled: true,
+        },
+        {
+          id: 'course-2',
+          title: 'Course 2',
+          description: 'Description',
+          thumbnail: 'https://example.com/thumb.jpg',
+          price: 99.99,
+          category: null,
+          level: null,
+          isPublished: false,
+          totalLessons: 0,
+          duration: null,
+          instructorId: 'instructor-2',
+          isEnrolled: false,
+        },
+      ];
 
       jest.spyOn(coursesService, 'findAllCourses').mockResolvedValue(courses);
 
@@ -283,21 +283,21 @@ describe('CoursesController', () => {
     });
   });
 
-   describe('GET /courses/:courseId (Get Single Course)', () => {
-     it('should return course details for enrolled student', async () => {
-       const course = {
-         id: 'course-1',
-         title: 'Course Title',
-         description: 'Description',
-         thumbnail: null,
-         price: null,
-         category: null,
-         level: null,
-         isPublished: false,
-         totalLessons: 0,
-         duration: null,
-         instructorId: 'instructor-1',
-       };
+  describe('GET /courses/:courseId (Get Single Course)', () => {
+    it('should return course details for enrolled student', async () => {
+      const course = {
+        id: 'course-1',
+        title: 'Course Title',
+        description: 'Description',
+        thumbnail: null,
+        price: null,
+        category: null,
+        level: null,
+        isPublished: false,
+        totalLessons: 0,
+        duration: null,
+        instructorId: 'instructor-1',
+      };
 
       jest
         .spyOn(coursesService, 'findCourseById')

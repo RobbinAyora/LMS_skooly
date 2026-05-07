@@ -64,15 +64,15 @@ describe('UsersService', () => {
   });
 
   describe('create', () => {
-     it('should create a new user', async () => {
-       const mockUserData = {
-         email: 'test@example.com',
-         password: 'hashed',
-         role: Role.STUDENT,
-         isVerified: false,
-         otp: '123456',
-         otpExpiry: new Date(),
-       };
+    it('should create a new user', async () => {
+      const mockUserData = {
+        email: 'test@example.com',
+        password: 'hashed',
+        role: Role.STUDENT,
+        isVerified: false,
+        otp: '123456',
+        otpExpiry: new Date(),
+      };
       const mockUser = {
         id: 'user-1',
         ...mockUserData,
@@ -90,20 +90,20 @@ describe('UsersService', () => {
   });
 
   describe('update', () => {
-     it('should update a user', async () => {
-       const mockUserData = {
-         isVerified: true,
-         otp: null,
-         otpExpiry: null,
-       };
-       const mockUser = {
-         id: 'user-1',
-         email: 'test@example.com',
-         password: 'hashed',
-         role: Role.STUDENT,
-         ...mockUserData,
-         createdAt: new Date(),
-       };
+    it('should update a user', async () => {
+      const mockUserData = {
+        isVerified: true,
+        otp: null,
+        otpExpiry: null,
+      };
+      const mockUser = {
+        id: 'user-1',
+        email: 'test@example.com',
+        password: 'hashed',
+        role: Role.STUDENT,
+        ...mockUserData,
+        createdAt: new Date(),
+      };
       mockPrismaService.user.update.mockResolvedValue(mockUser);
 
       const result = await service.update('user-1', mockUserData);

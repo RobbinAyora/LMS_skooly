@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, UseGuards, Body, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+  Body,
+  Logger,
+} from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -19,7 +27,9 @@ export class CoursesController {
     @CurrentUser() user: CurrentUserData,
     @Body() createCourseDto: CreateCourseDto,
   ) {
-    this.logger.log(`Incoming Course DTO (Controller): ${JSON.stringify(createCourseDto)}`);
+    this.logger.log(
+      `Incoming Course DTO (Controller): ${JSON.stringify(createCourseDto)}`,
+    );
     return this.coursesService.createCourse(createCourseDto, user.userId);
   }
 
@@ -46,7 +56,7 @@ export class CoursesController {
     @CurrentUser() user: CurrentUserData,
     @Param('courseId') courseId: string,
   ) {
-    return this.coursesService.getLessons(user.userId, courseId);
+    return this.coursesService.getLessons(user.userId, courseId, user.role);
   }
 
   @Get(':courseId')
@@ -54,6 +64,6 @@ export class CoursesController {
     @CurrentUser() user: CurrentUserData,
     @Param('courseId') courseId: string,
   ) {
-    return this.coursesService.findCourseById(user.userId, courseId);
+    return this.coursesService.findCourseById(user.userId, courseId, user.role);
   }
 }

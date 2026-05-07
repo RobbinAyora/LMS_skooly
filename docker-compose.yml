@@ -29,6 +29,9 @@ services:
       EMAIL_USER: services@bkgconsultants.com
       EMAIL_PASS: zxwz cfqb gian gtuf
       FRONTEND_URL: https://lms-frontend-five-khaki.vercel.app
+      CLOUDINARY_CLOUD_NAME: "dchhvlkqb"
+      CLOUDINARY_API_KEY: "462945142975826"
+      CLOUDINARY_API_SECRET: "ZYZ2_5o7bZgSAbAg9UEFILhTvMw"
 
 volumes:
   postgres_data:

@@ -14,10 +14,10 @@ jest.mock('../config/cloudinary.config', () => ({
   },
 }));
 
- describe('LessonsService', () => {
-   let service: LessonsService;
-   let mockPrismaService: any;
-   let mockCloudinaryService: any;
+describe('LessonsService', () => {
+  let service: LessonsService;
+  let mockPrismaService: any;
+  let mockCloudinaryService: any;
 
   const mockCourse = {
     id: 'course-1',
@@ -38,23 +38,23 @@ jest.mock('../config/cloudinary.config', () => ({
 
   const videoBuffer = Buffer.from('fake-video-buffer');
 
-   beforeEach(async () => {
-     mockPrismaService = {
-       course: {
-         findUnique: jest.fn(),
-       },
-       lesson: {
-         create: jest.fn(),
-         findMany: jest.fn(),
-       },
-       enrollment: {
-         findFirst: jest.fn(),
-       },
-     } as any;
+  beforeEach(async () => {
+    mockPrismaService = {
+      course: {
+        findUnique: jest.fn(),
+      },
+      lesson: {
+        create: jest.fn(),
+        findMany: jest.fn(),
+      },
+      enrollment: {
+        findFirst: jest.fn(),
+      },
+    } as any;
 
-     mockCloudinaryService = {
-       uploadVideo: jest.fn(),
-     } as any;
+    mockCloudinaryService = {
+      uploadVideo: jest.fn(),
+    } as any;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

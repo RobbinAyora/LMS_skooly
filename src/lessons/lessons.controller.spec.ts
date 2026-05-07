@@ -93,17 +93,17 @@ describe('LessonsController', () => {
 
       jest.spyOn(lessonsService, 'uploadVideo').mockResolvedValue(mockLesson);
 
-       const result = await controller.createLesson(
-         null as any,
-         createLessonDto,
-         mockUser as any,
-       );
+      const result = await controller.createLesson(
+        null as any,
+        createLessonDto,
+        mockUser as any,
+      );
 
-       expect(lessonsService.uploadVideo).toHaveBeenCalledWith(
-         null,
-         createLessonDto,
-         'instructor-1',
-       );
+      expect(lessonsService.uploadVideo).toHaveBeenCalledWith(
+        null,
+        createLessonDto,
+        'instructor-1',
+      );
       expect(result).toEqual(mockLesson);
     });
 
@@ -114,9 +114,9 @@ describe('LessonsController', () => {
         courseId: 'course-1',
       };
 
-       await expect(
-         controller.createLesson(null as any, createLessonDto, mockUser as any),
-       ).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.createLesson(null as any, createLessonDto, mockUser as any),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should handle service errors', async () => {
